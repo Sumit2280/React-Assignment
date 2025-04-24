@@ -5,6 +5,20 @@ import { useNavigate, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { User } from "../types/User";
 
+type FormField = {
+  label: string;
+  name: keyof User;
+  type: string;
+};
+
+const formFields: FormField[] = [
+  { label: "First Name", name: "firstName", type: "text" },
+  { label: "Last Name", name: "lastName", type: "text" },
+  { label: "Email", name: "email", type: "email" },
+  { label: "Mobile No.", name: "mobile", type: "text" },
+  { label: "Address", name: "address", type: "text" },
+];
+
 const UserForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -80,110 +94,28 @@ const UserForm = () => {
       </h2>
 
       <form onSubmit={formik.handleSubmit} className="space-y-4">
-        {/* First Name */}
-        <div>
-          <label
-            htmlFor="firstName"
-            className="block font-medium text-gray-700"
-          >
-            First Name
-          </label>
-          <input
-            id="firstName"
-            type="text"
-            name="firstName"
-            value={formik.values.firstName}
-            onChange={formik.handleChange}
-            className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {formik.errors.firstName && formik.touched.firstName && (
-            <div className="text-red-500 text-sm mt-1">
-              {formik.errors.firstName}
-            </div>
-          )}
-        </div>
+        {formFields.map(({ label, name, type }) => (
+          <div key={name}>
+            <label htmlFor={name} className="block font-medium text-gray-700">
+              {label}
+            </label>
+            <input
+              id={name}
+              name={name}
+              type={type}
+              value={formik.values[name]}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {formik.touched[name] && formik.errors[name] && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors[name]}
+              </div>
+            )}
+          </div>
+        ))}
 
-        {/* Last Name */}
-        <div>
-          <label htmlFor="lastName" className="block font-medium text-gray-700">
-            Last Name
-          </label>
-          <input
-            id="lastName"
-            type="text"
-            name="lastName"
-            value={formik.values.lastName}
-            onChange={formik.handleChange}
-            className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {formik.errors.lastName && formik.touched.lastName && (
-            <div className="text-red-500 text-sm mt-1">
-              {formik.errors.lastName}
-            </div>
-          )}
-        </div>
-
-        {/* Email */}
-        <div>
-          <label htmlFor="email" className="block font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            name="email"
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {formik.errors.email && formik.touched.email && (
-            <div className="text-red-500 text-sm mt-1">
-              {formik.errors.email}
-            </div>
-          )}
-        </div>
-
-        {/* Mobile */}
-        <div>
-          <label htmlFor="mobile" className="block font-medium text-gray-700">
-            Mobile No.
-          </label>
-          <input
-            id="mobile"
-            type="text"
-            name="mobile"
-            value={formik.values.mobile}
-            onChange={formik.handleChange}
-            className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {formik.errors.mobile && formik.touched.mobile && (
-            <div className="text-red-500 text-sm mt-1">
-              {formik.errors.mobile}
-            </div>
-          )}
-        </div>
-
-        {/* Address */}
-        <div>
-          <label htmlFor="address" className="block font-medium text-gray-700">
-            Address
-          </label>
-          <input
-            id="address"
-            type="text"
-            name="address"
-            value={formik.values.address}
-            onChange={formik.handleChange}
-            className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {formik.errors.address && formik.touched.address && (
-            <div className="text-red-500 text-sm mt-1">
-              {formik.errors.address}
-            </div>
-          )}
-        </div>
-
-        {/* Submit Button */}
         <div>
           <button
             type="submit"

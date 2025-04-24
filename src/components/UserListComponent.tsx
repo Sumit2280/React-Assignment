@@ -1,5 +1,5 @@
-import { UseMutateFunction } from "@tanstack/react-query";
 import React from "react";
+import { UseMutateFunction } from "@tanstack/react-query";
 import { NavigateFunction } from "react-router";
 import { User } from "../types/User";
 
@@ -18,6 +18,19 @@ type UserListComponentProps = {
   handleDeleteArray: (flag: boolean, id: string | undefined) => void;
   handleEdit: (id: string | undefined) => void;
 };
+
+type ColumnConfig = {
+  label: string;
+  key: keyof User;
+  sortable?: boolean;
+};
+
+const tableColumns: ColumnConfig[] = [
+  { label: "First Name", key: "firstName", sortable: true },
+  { label: "Last Name", key: "lastName", sortable: true },
+  { label: "Email", key: "email", sortable: true },
+  { label: "Mobile No.", key: "mobile", sortable: true },
+];
 
 const UserListComponent = ({
   searchKey,
@@ -41,25 +54,19 @@ const UserListComponent = ({
           <input
             type="text"
             value={searchKey}
-            onChange={(e) => {
-              setSearchKey(e.target.value);
-            }}
+            onChange={(e) => setSearchKey(e.target.value)}
             className="border border-gray-300 rounded px-4 py-2"
           />
         </div>
         <button
-          onClick={() => {
-            deleteMultipleUsers(deleteArray);
-          }}
+          onClick={() => deleteMultipleUsers(deleteArray)}
           className="bg-red-500 text-black rounded px-4 py-2"
         >
           Delete Selected
         </button>
         <button
           className="bg-red-500 text-black rounded px-4 py-2"
-          onClick={() => {
-            navigate("/create");
-          }}
+          onClick={() => navigate("/create")}
         >
           Create User
         </button>
@@ -69,76 +76,42 @@ const UserListComponent = ({
         <thead className="bg-gray-100">
           <tr>
             <th className="p-4"></th>
-            <th className="p-4">
-              <button
-                onClick={() => requestSort("firstName")}
-                className="flex items-center"
-              >
-                First Name{" "}
-                {sortConfig.key === "firstName"
-                  ? sortConfig.direction === "asc"
-                    ? "↑"
-                    : "↓"
-                  : null}
-              </button>
-            </th>
-            <th className="p-4">
-              <button
-                onClick={() => requestSort("lastName")}
-                className="flex items-center"
-              >
-                Last Name{" "}
-                {sortConfig.key === "lastName"
-                  ? sortConfig.direction === "asc"
-                    ? "↑"
-                    : "↓"
-                  : null}
-              </button>
-            </th>
-            <th className="p-4">
-              <button
-                onClick={() => requestSort("email")}
-                className="flex items-center"
-              >
-                Email{" "}
-                {sortConfig.key === "email"
-                  ? sortConfig.direction === "asc"
-                    ? "↑"
-                    : "↓"
-                  : null}
-              </button>
-            </th>
-            <th className="p-4">
-              <button
-                onClick={() => requestSort("mobile")}
-                className="flex items-center"
-              >
-                Mobile No.{" "}
-                {sortConfig.key === "mobile"
-                  ? sortConfig.direction === "asc"
-                    ? "↑"
-                    : "↓"
-                  : null}
-              </button>
-            </th>
+            {tableColumns.map((col) => (
+              <th key={col.key} className="p-4">
+                {col.sortable ? (
+                  <button
+                    onClick={() => requestSort(col.key)}
+                    className="flex items-center"
+                  >
+                    {col.label}{" "}
+                    {sortConfig.key === col.key
+                      ? sortConfig.direction === "asc"
+                        ? "↑"
+                        : "↓"
+                      : null}
+                  </button>
+                ) : (
+                  col.label
+                )}
+              </th>
+            ))}
             <th className="p-4">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {filteredAndSortedData?.map((user: User) => (
+          {filteredAndSortedData.map((user) => (
             <tr key={user.id} className="hover:bg-gray-50">
               <td className="p-4">
                 <input
                   type="checkbox"
-                  onChange={(e) => {
-                    handleDeleteArray(e.target.checked, user.id);
-                  }}
+                  onChange={(e) => handleDeleteArray(e.target.checked, user.id)}
                 />
               </td>
-              <td className="p-4">{user.firstName}</td>
-              <td className="p-4">{user.lastName}</td>
-              <td className="p-4">{user.email}</td>
-              <td className="p-4">{user.mobile}</td>
+              {tableColumns.map((col) => (
+                <td key={col.key} className="p-4">
+                  {user[col.key]}
+                </td>
+              ))}
               <td className="p-4">
                 <button
                   onClick={() => handleEdit(user.id)}
